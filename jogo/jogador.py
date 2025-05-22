@@ -1,4 +1,12 @@
-import pygame
 from utils.game_object import GameObject
 
-jogador = GameObject("assets\imagens\player.png")
+class Player(GameObject):
+    def __init__(self, image_path):
+        super().__init__(image_path)
+        self.vidas = 3
+
+    def player_movement(self):
+        pass
+
+    def collision(self):
+        pass
