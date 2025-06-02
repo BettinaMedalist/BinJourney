@@ -1,6 +1,0 @@
-MENU = 0
-RODANDO = 1
-CONFIG = 2
-PAUSADO = 3
-MORTO = 4
-SAIR = -1

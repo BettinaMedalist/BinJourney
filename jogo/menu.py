@@ -1,8 +1,7 @@
 #tela inicial, pausa
 import pygame
 import sys
-#from utils.funcoes import*
-from game_state import*
+from constantes import*
 from utils.game_object import*
 from utils.botao import*
 

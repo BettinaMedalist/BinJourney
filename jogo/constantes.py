@@ -1,0 +1,29 @@
+#Arma
+MAO = 0
+PISTOLA = 1
+METRALHADORA = 2
+MELEE = 3
+
+#Configurações
+FPS = 60
+RES = 70
+
+#Fases
+TUTORIAL = 0
+FASE_1 = 1
+FASE_2 = 2
+BOSS = 4
+
+#Game_state
+MENU = 0
+RODANDO = 1
+CONFIG = 2
+PAUSADO = 3
+MORTO = 4
+SAIR = -1
+
+#Mira
+DIREITA = 0
+CIMA = 90
+ESQUERDA = 180
+BAIXO = 270

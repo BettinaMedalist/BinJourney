@@ -6,9 +6,11 @@ class GameObject():
     def __init__(self, image_path = None, x = 0, y = 0):
         self.x = x
         self.y = y
+        self.angle = 0
         self.image = None
         if image_path:
             self.image = carregar_imagem(image_path)
+        self.original_image = self.image
         self.width = self.image.get_width()
         self.height = self.image.get_height()
         

@@ -1,6 +1,5 @@
 import pygame
-from config import*
-from game_state import*
+from constantes import*
 from jogador import*
 from menu import*
 from hud import*
@@ -13,23 +12,49 @@ class Game:
         ALTURA_TELA = 600
         pygame.display.set_caption("Bin Journey")
         self.screen = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
-        
 
         self.clock = pygame.time.Clock()
 
         self.game_state = MENU
         self.running = True
 
+        self.hud = Hud(self.screen)
         self.player = Player("jogo\sprites\player.png")
         self.player.set_position(meio("x", self.player, self.screen), meio("y", self.player, self.screen))
 
     def handle_events(self):
         for event in pygame.event.get():
+                #Fechar o jogo
                 if event.type == pygame.QUIT:
                     self.running = False
+
+                #Teclas do teclado
                 elif event.type == pygame.KEYDOWN:
+                    #Pausar o jogo
                     if event.key == pygame.K_ESCAPE:
                         self.game_state = PAUSADO
+                    #Trocar de arma
+                    elif event.key == pygame.K_1:
+                        self.player.trade_weapons(MAO)
+                    elif event.key == pygame.K_2:
+                        self.player.trade_weapons(PISTOLA)
+                    elif event.key == pygame.K_3:
+                        self.player.trade_weapons(METRALHADORA)
+                    elif event.key == pygame.K_4:
+                        self.player.trade_weapons(MELEE)
+
+                    #Mirar e atirar
+                    elif event.key == pygame.K_RIGHT:
+                        self.player.aim(DIREITA)
+                    elif event.key == pygame.K_UP:
+                        self.player.aim(CIMA)
+                    elif event.key == pygame.K_LEFT:
+                        self.player.aim(ESQUERDA)
+                    elif  event.key == pygame.K_DOWN:
+                        self.player.aim(BAIXO)
+
+
+                    
 
     def render(self):
         self.screen.fill('YELLOW')
@@ -38,7 +63,7 @@ class Game:
 
         elif self.game_state == RODANDO:
             self.player.draw(self.screen)
-            mostrar_hud(self.screen, self.player)
+            self.hud.mostrar_vida(self.player)
         
         #elif game_state == CONFIG:
 
@@ -53,8 +78,7 @@ class Game:
     def run(self):
         while self.running:
             self.handle_events()
-            self.render()
-            
+            self.render()      
 
         delta_time = self.clock.tick(FPS)/1000
 
