@@ -3,9 +3,9 @@ from utils.funcoes import carregar_imagem
 
 #A maior parte dos sprites do jogo terá essa classe para facilitar a colisão e o posicionamento dos objetos
 class GameObject():
-    def __init__(self, image_path = None):
-        self.x = 0
-        self.y = 0
+    def __init__(self, image_path = None, x = 0, y = 0):
+        self.x = x
+        self.y = y
         self.image = None
         if image_path:
             self.image = carregar_imagem(image_path)

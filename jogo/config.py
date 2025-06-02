@@ -1,3 +1,3 @@
 #Ainda decidindo se vale a pena fazer um arquivo para armazenar alguns dados
-FPS = 240
+FPS = 60
 RES = 70
