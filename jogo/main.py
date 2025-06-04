@@ -19,7 +19,7 @@ class Game:
         self.running = True
 
         self.hud = Hud(self.screen)
-        self.player = Player("jogo\sprites\player.png")
+        self.player = Player("jogo\sprites\player.png", self.screen)
         self.player.set_position(meio("x", self.player, self.screen), meio("y", self.player, self.screen))
 
     def handle_events(self):
@@ -35,23 +35,23 @@ class Game:
                         self.game_state = PAUSADO
                     #Trocar de arma
                     elif event.key == pygame.K_1:
-                        self.player.trade_weapons(MAO)
+                        self.player.arma = MAO
                     elif event.key == pygame.K_2:
-                        self.player.trade_weapons(PISTOLA)
+                        self.player.arma = PISTOLA
                     elif event.key == pygame.K_3:
-                        self.player.trade_weapons(METRALHADORA)
+                        self.player.arma = METRALHADORA
                     elif event.key == pygame.K_4:
-                        self.player.trade_weapons(MELEE)
+                        self.player.arma = MELEE
 
                     #Mirar e atirar
                     elif event.key == pygame.K_RIGHT:
-                        self.player.aim(DIREITA)
+                        self.player.angle = DIREITA
                     elif event.key == pygame.K_UP:
-                        self.player.aim(CIMA)
+                        self.player.angle = CIMA
                     elif event.key == pygame.K_LEFT:
-                        self.player.aim(ESQUERDA)
+                        self.player.angle = ESQUERDA
                     elif  event.key == pygame.K_DOWN:
-                        self.player.aim(BAIXO)
+                        self.player.angle = BAIXO
 
 
                     
@@ -75,10 +75,15 @@ class Game:
 
         pygame.display.flip()
 
+    def update(self):
+        self.player.trade_weapons()
+        self.player.aim()
+
     def run(self):
         while self.running:
             self.handle_events()
-            self.render()      
+            self.render()
+            self.update()
 
         delta_time = self.clock.tick(FPS)/1000
 
