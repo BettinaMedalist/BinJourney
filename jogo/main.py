@@ -11,7 +11,7 @@ class Game:
         LARGURA_TELA = 800
         ALTURA_TELA = 600
         pygame.display.set_caption("Bin Journey")
-        self.screen = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
+        self.screen = pygame.display.set_mode((16 * RES, 9 * RES))
 
         self.clock = pygame.time.Clock()
 
@@ -64,6 +64,7 @@ class Game:
         elif self.game_state == RODANDO:
             self.player.draw(self.screen)
             self.hud.mostrar_vida(self.player)
+            self.hud.mostrar_arma(self.player)
         
         #elif game_state == CONFIG:
 

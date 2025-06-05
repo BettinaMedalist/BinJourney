@@ -6,7 +6,7 @@ MELEE = 3
 
 #Configurações
 FPS = 60
-RES = 70
+RES = 80
 
 #Fases
 TUTORIAL = 0

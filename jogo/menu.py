@@ -25,8 +25,8 @@ def mostrar_menu(tela, game_state):
     b_config = Botao("jogo\sprites\configuracoes.png")
     b_sair = Botao(("jogo\sprites\sair.png"))
 
-    b_jogar.set_position(meio("x", b_jogar, tela), 100)
-    b_config.set_position(meio("x", b_config, tela), b_jogar.y + b_jogar.height + 20)
+    b_config.set_position(meio("x", b_config, tela), meio("y", b_config, tela))
+    b_jogar.set_position(meio("x", b_jogar, tela), b_config.y - 20 - b_jogar.height)
     b_sair.set_position(meio("x", b_sair, tela), b_config.y + b_config.height + 20)
 
     b_jogar.draw(tela)
@@ -48,8 +48,8 @@ def mostrar_pause(tela, game_state):
     b_config = Botao("jogo\sprites\configuracoes.png")
     b_menu_principal = Botao("jogo\sprites\life.png")
 
-    b_voltar.set_position(meio("x", b_voltar, tela), 100)
-    b_config.set_position(meio("x", b_config, tela), b_voltar.y + b_voltar.height + 20)
+    b_config.set_position(meio("x", b_config, tela), meio("y", b_config, tela))
+    b_voltar.set_position(meio("x", b_voltar, tela), b_config.y - 20 - b_voltar.height)
     b_menu_principal.set_position(meio("x", b_menu_principal, tela), b_config.y + b_config.height + 20)
 
     b_voltar.draw(tela)
