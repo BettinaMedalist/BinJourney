@@ -1,4 +1,4 @@
-from tiro import*
+from classes.tiro import*
 from constantes import*
 
 class Player(GameObject):
