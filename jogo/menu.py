@@ -1,8 +1,5 @@
 #tela inicial, pausa
-import pygame
-import sys
 from constantes import*
-from utils.game_object import*
 from utils.botao import*
 
 #Esse arquivo vai gerenciar os diferentes menus

@@ -1,5 +1,4 @@
-import pygame
-from utils.funcoes import carregar_imagem
+from utils.funcoes import*
 
 #A maior parte dos sprites do jogo terá essa classe para facilitar a colisão e o posicionamento dos objetos
 class GameObject():

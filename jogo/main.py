@@ -1,4 +1,3 @@
-import pygame
 from constantes import*
 from jogador import*
 from menu import*
@@ -13,13 +12,14 @@ class Game:
 
         self.clock = pygame.time.Clock()
 
+
         self.game_state = MENU
         self.running = True
 
         self.hud = Hud(self.screen)
         self.player = Player(self.screen, "jogo\sprites\player.png")
         self.player.rect.center = self.screen.get_rect().center
-        #self.player.set_position(meio("x", self.player, self.screen), meio("y", self.player, self.screen))
+        self.player_shooting = False
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -51,6 +51,12 @@ class Game:
                         self.player.angle = ESQUERDA
                     elif  event.key == pygame.K_DOWN:
                         self.player.angle = BAIXO
+                    
+                    elif event.key == pygame.K_SPACE:
+                        self.player_shooting = True
+                elif event.type == pygame.KEYUP:
+                    if event.key == pygame.K_SPACE:
+                        self.player_shooting = False
 
     def render(self):
         self.screen.fill('YELLOW')
@@ -61,6 +67,8 @@ class Game:
             self.player.draw()
             self.hud.mostrar_vida(self.player)
             self.hud.mostrar_arma(self.player)
+            for bala in self.player.shots:
+                bala.draw()
         
         #elif game_state == CONFIG:
 
@@ -76,11 +84,20 @@ class Game:
         self.player.trade_weapons()
         self.player.aim()
 
+        if self.player_shooting:
+            self.player.shoot()
+        
+        for bala in self.player.shots:
+            bala.update()
+            if not self.screen.get_rect().colliderect(bala.rect):
+                self.player.shots.remove(bala)
+
     def run(self):
         while self.running:
             self.handle_events()
-            self.render()
             self.update()
+            self.render()
+            
 
         delta_time = self.clock.tick(FPS)/1000
 

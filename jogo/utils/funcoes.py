@@ -1,7 +1,5 @@
 import pygame
 
-pygame.init()
-
 #Apenas para facilitar o carregamento de imagens
 def carregar_imagem(caminho):
     imagem = pygame.image.load(caminho).convert_alpha()

@@ -1,5 +1,4 @@
-from utils.game_object import*
-from utils.funcoes import*
+from tiro import*
 from constantes import*
 
 class Player(GameObject):
@@ -12,15 +11,19 @@ class Player(GameObject):
             "pistola": carregar_imagem("jogo\sprites\player_pistola.png"),
             "metralhadora": carregar_imagem("jogo\sprites\player_metralhadora.png")
         }
+
+        self.shots = []
+        
         self.original_image = self.image
 
     def aim(self):
-        pass
         rotated_image = pygame.transform.rotate(self.original_image, self.angle)
         new_rect = rotated_image.get_rect(center=self.rect.center)
         self.image = rotated_image
         self.rect = new_rect
-        #self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+    
+    def shoot(self):
+        self.shots.append(Tiro(self.screen, "jogo\sprites\player.png", self))
 
     def trade_weapons(self):
         if self.arma == MAO:

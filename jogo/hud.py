@@ -1,5 +1,4 @@
 from constantes import*
-from utils.funcoes import carregar_imagem
 from utils.game_object import*
 
 #Para desenhar na tela o hud
