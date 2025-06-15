@@ -8,8 +8,6 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        LARGURA_TELA = 800
-        ALTURA_TELA = 600
         pygame.display.set_caption("Bin Journey")
         self.screen = pygame.display.set_mode((16 * RES, 9 * RES))
 
@@ -19,8 +17,9 @@ class Game:
         self.running = True
 
         self.hud = Hud(self.screen)
-        self.player = Player("jogo\sprites\player.png", self.screen)
-        self.player.set_position(meio("x", self.player, self.screen), meio("y", self.player, self.screen))
+        self.player = Player(self.screen, "jogo\sprites\player.png")
+        self.player.rect.center = self.screen.get_rect().center
+        #self.player.set_position(meio("x", self.player, self.screen), meio("y", self.player, self.screen))
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -53,16 +52,13 @@ class Game:
                     elif  event.key == pygame.K_DOWN:
                         self.player.angle = BAIXO
 
-
-                    
-
     def render(self):
         self.screen.fill('YELLOW')
         if self.game_state == MENU:
             self.game_state = mostrar_menu(self.screen, self.game_state)
 
         elif self.game_state == RODANDO:
-            self.player.draw(self.screen)
+            self.player.draw()
             self.hud.mostrar_vida(self.player)
             self.hud.mostrar_arma(self.player)
         

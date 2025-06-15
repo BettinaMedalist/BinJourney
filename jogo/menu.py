@@ -20,18 +20,22 @@ class Menu:
 """     
 
 
-def mostrar_menu(tela, game_state):
-    b_jogar = Botao("jogo\sprites\jogar.png")
-    b_config = Botao("jogo\sprites\configuracoes.png")
-    b_sair = Botao(("jogo\sprites\sair.png"))
+def mostrar_menu(screen, game_state):
+    b_jogar = Botao(screen, "jogo\sprites\jogar.png")
+    b_config = Botao(screen, "jogo\sprites\configuracoes.png")
+    b_sair = Botao(screen, "jogo\sprites\sair.png")
 
-    b_config.set_position(meio("x", b_config, tela), meio("y", b_config, tela))
-    b_jogar.set_position(meio("x", b_jogar, tela), b_config.y - 20 - b_jogar.height)
-    b_sair.set_position(meio("x", b_sair, tela), b_config.y + b_config.height + 20)
+    b_config.rect.center = screen.get_rect().center
 
-    b_jogar.draw(tela)
-    b_config.draw(tela)
-    b_sair.draw(tela)
+    b_jogar.rect.centerx = b_config.rect.centerx
+    b_jogar.rect.bottom = b_config.rect.top - 20
+
+    b_sair.rect.centerx = b_config.rect.centerx
+    b_sair.rect.top = b_config.rect.bottom + 20
+
+    b_jogar.draw()
+    b_config.draw()
+    b_sair.draw()
 
     if b_jogar.apertado():
         game_state = RODANDO
@@ -42,19 +46,23 @@ def mostrar_menu(tela, game_state):
         # game_state = SAIR
     return game_state
 
-def mostrar_pause(tela, game_state):
+def mostrar_pause(screen, game_state):
     #Problema na hora de clicar no botão de voltar para o menu devido ao problema em utils\funcoes\apertado
-    b_voltar = Botao("jogo\sprites\sair.png")
-    b_config = Botao("jogo\sprites\configuracoes.png")
-    b_menu_principal = Botao("jogo\sprites\life.png")
+    b_voltar = Botao(screen, "jogo\sprites\sair.png")
+    b_config = Botao(screen, "jogo\sprites\configuracoes.png")
+    b_menu_principal = Botao(screen, "jogo\sprites\life.png")
 
-    b_config.set_position(meio("x", b_config, tela), meio("y", b_config, tela))
-    b_voltar.set_position(meio("x", b_voltar, tela), b_config.y - 20 - b_voltar.height)
-    b_menu_principal.set_position(meio("x", b_menu_principal, tela), b_config.y + b_config.height + 20)
+    b_config.rect.center = screen.get_rect().center
 
-    b_voltar.draw(tela)
-    b_config.draw(tela)
-    b_menu_principal.draw(tela)
+    b_voltar.rect.centerx = b_config.rect.centerx
+    b_voltar.rect.bottom = b_config.rect.top - 20
+
+    b_menu_principal.rect.centerx = b_config.rect.centerx
+    b_menu_principal.rect.top = b_config.rect.bottom + 20
+
+    b_voltar.draw()
+    b_config.draw()
+    b_menu_principal.draw()
 
 
     if b_voltar.apertado():
