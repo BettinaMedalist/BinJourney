@@ -5,6 +5,15 @@ class Player(GameObject):
     def __init__(self, screen, image_path):
         super().__init__(screen, image_path)
         self.vidas = 3
+
+        self.speed = 50
+        
+        self.left = 0
+        self.right = 0
+        self.up = 0
+        self.down = 0
+        self.running = 1
+
         self.arma = MAO
         self.sprites = {
             "mao": carregar_imagem("jogo\sprites\player_semarma.png"),

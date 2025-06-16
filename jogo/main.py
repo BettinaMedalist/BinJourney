@@ -20,9 +20,12 @@ class Game:
         self.running = True
 
         self.hud = Hud(self.screen)
+
         self.player = Player(self.screen, "jogo\sprites\player.png")
         self.player.rect.center = self.screen.get_rect().center
         self.player_shooting = False
+
+        self.fase = Tutorial(self.screen, "jogo\sprites\FUNDOTESTE1.PNG", self.delta_time)
 
     def handle_events(self):
         self.delta_time = self.clock.tick(FPS)/1000
@@ -43,7 +46,7 @@ class Game:
                         self.mouse = True
 
                     #Trocar de arma
-                    elif event.key == pygame.K_1:
+                    if event.key == pygame.K_1:
                         self.player.arma = MAO
                     elif event.key == pygame.K_2:
                         self.player.arma = PISTOLA
@@ -53,7 +56,7 @@ class Game:
                         self.player.arma = MELEE
 
                     #Mirar e atirar
-                    elif event.key == pygame.K_RIGHT:
+                    if event.key == pygame.K_RIGHT:
                         self.player.angle = DIREITA
                     elif event.key == pygame.K_UP:
                         self.player.angle = CIMA
@@ -61,15 +64,41 @@ class Game:
                         self.player.angle = ESQUERDA
                     elif  event.key == pygame.K_DOWN:
                         self.player.angle = BAIXO
+
+                    if event.key == pygame.K_w:
+                        self.player.up = self.player.speed
+                        self.player.angle = CIMA
+                    if event.key == pygame.K_a:
+                        self.player.left = self.player.speed
+                        self.player.angle = ESQUERDA
+                    if event.key == pygame.K_s:
+                        self.player.down = self.player.speed
+                        self.player.angle = BAIXO
+                    if event.key == pygame.K_d:
+                        self.player.right = self.player.speed
+                        self.player.angle = DIREITA
                     
+                    if event.key == pygame.K_LSHIFT:
+                        self.player.running = 2
+
                     elif event.key == pygame.K_SPACE:
                         self.player_shooting = True
 
-                    else:
-                        self.mouse = False
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_SPACE:
                         self.player_shooting = False
+                    
+                    if event.key == pygame.K_w:
+                        self.player.up = 0
+                    if event.key == pygame.K_s:
+                        self.player.down = 0
+                    if event.key == pygame.K_a:
+                        self.player.left = 0 
+                    if event.key == pygame.K_d:
+                        self.player.right = 0
+
+                    if event.key == pygame.K_LSHIFT:
+                        self.player.running = 1
 
     def render(self):
         self.screen.fill('YELLOW')
@@ -77,7 +106,7 @@ class Game:
             self.game_state = mostrar_menu(self.screen, self.game_state)
 
         elif self.game_state == RODANDO:
-            Tutorial(self.screen, "jogo\sprites\FUNDOTESTE1-sheet.png").draw()
+            self.fase.draw()
             self.player.draw()
             self.hud.mostrar_vida(self.player)
             self.hud.mostrar_arma(self.player)
@@ -105,6 +134,8 @@ class Game:
             bala.update(self.delta_time)
             if not self.screen.get_rect().colliderect(bala.rect):
                 self.player.shots.remove(bala)
+        
+        self.fase.movement(self.player)
 
     def run(self):
         while self.running:
