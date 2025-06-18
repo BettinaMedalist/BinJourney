@@ -1,5 +1,4 @@
-from utils.funcoes import*
-from utils.game_object import*
+from classes.game_object import*
 
 #Não sei se vale a pena fazer uma classe botão
 class Botao(GameObject):

@@ -23,9 +23,9 @@ class Game:
 
         self.player = Player(self.screen, "jogo\sprites\player.png")
         self.player.rect.center = self.screen.get_rect().center
-        self.player_shooting = False
+        self.player.shooting = False
 
-        self.fase = Tutorial(self.screen, "jogo\sprites\FUNDOTESTE1.PNG", self.delta_time)
+        self.fase = Tutorial(self.screen, "jogo\sprites\FUNDOTESTE1.PNG", self.player, self.delta_time)
 
     def handle_events(self):
         self.delta_time = self.clock.tick(FPS)/1000
@@ -39,7 +39,7 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     #Pausar o jogo
                     if event.key == pygame.K_ESCAPE:
-                        if self.game_state == RODANDO:
+                        if self.game_state != MENU:
                             self.game_state = PAUSADO
 
                     elif event.key == pygame.MOUSEBUTTONDOWN:
@@ -67,26 +67,28 @@ class Game:
 
                     if event.key == pygame.K_w:
                         self.player.up = self.player.speed
-                        self.player.angle = CIMA
                     if event.key == pygame.K_a:
                         self.player.left = self.player.speed
-                        self.player.angle = ESQUERDA
                     if event.key == pygame.K_s:
                         self.player.down = self.player.speed
-                        self.player.angle = BAIXO
                     if event.key == pygame.K_d:
                         self.player.right = self.player.speed
-                        self.player.angle = DIREITA
                     
                     if event.key == pygame.K_LSHIFT:
-                        self.player.running = 2
+                        self.player.running = 3
 
                     elif event.key == pygame.K_SPACE:
-                        self.player_shooting = True
+                        self.player.shooting = True
+
+                    elif event.key == pygame.K_r:
+                        if self.player.arma == PISTOLA:
+                            self.player.m_pistola = 7
+                        elif self.player.arma == METRALHADORA:
+                            self.player.m_metralhadora = 30
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_SPACE:
-                        self.player_shooting = False
+                        self.player.shooting = False
                     
                     if event.key == pygame.K_w:
                         self.player.up = 0
@@ -106,7 +108,7 @@ class Game:
             self.game_state = mostrar_menu(self.screen, self.game_state)
 
         elif self.game_state == RODANDO:
-            self.fase.draw()
+            self.fase.render()
             self.player.draw()
             self.hud.mostrar_vida(self.player)
             self.hud.mostrar_arma(self.player)
@@ -127,8 +129,7 @@ class Game:
         self.player.trade_weapons()
         self.player.aim()
 
-        if self.player_shooting and not self.player.arma == MAO:
-            self.player.shoot()
+        self.player.shoot()
         
         for bala in self.player.shots:
             bala.update(self.delta_time)
@@ -136,6 +137,7 @@ class Game:
                 self.player.shots.remove(bala)
         
         self.fase.movement(self.player)
+        self.fase.running()
 
     def run(self):
         while self.running:

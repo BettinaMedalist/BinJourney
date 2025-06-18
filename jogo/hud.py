@@ -1,5 +1,5 @@
 from constantes import*
-from utils.game_object import*
+from classes.game_object import*
 
 #Para desenhar na tela o hud
 class Hud():

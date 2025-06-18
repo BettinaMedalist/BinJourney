@@ -6,13 +6,19 @@ class Player(GameObject):
         super().__init__(screen, image_path)
         self.vidas = 3
 
-        self.speed = 50
+        self.speed = 100
         
         self.left = 0
         self.right = 0
         self.up = 0
         self.down = 0
+
         self.running = 1
+
+        self.m_pistola = 7
+        self.m_metralhadora = 30
+
+        self.shooting = False
 
         self.arma = MAO
         self.sprites = {
@@ -32,7 +38,18 @@ class Player(GameObject):
         self.rect = new_rect
     
     def shoot(self):
-        self.shots.append(Tiro(self.screen, "jogo\sprites\player.png", self))
+        if self.shooting:
+            if self.arma == PISTOLA and self.m_pistola > 0:
+                self.shots.append(Tiro(self.screen, "jogo\sprites\player.png", self))
+                self.m_pistola -= 1
+                self.shooting = False
+            
+            elif self.arma == METRALHADORA and self.m_metralhadora > 0:
+                self.shots.append(Tiro(self.screen, "jogo\sprites\player.png", self))
+                self.m_metralhadora -= 1
+            if self.m_metralhadora <= 0:
+                self.shooting = False
+
 
     def trade_weapons(self):
         if self.arma == MAO:
