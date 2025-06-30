@@ -3,6 +3,7 @@ from jogador import*
 from menu import*
 from hud import*
 from fases.tutorial import*
+from fases.fase1 import*
 
 class Game:
     def __init__(self):
@@ -14,18 +15,16 @@ class Game:
         self.clock = pygame.time.Clock()
         self.delta_time = self.clock.tick(FPS)/1000
 
-        self.mouse = False
-
         self.game_state = MENU
         self.running = True
 
         self.hud = Hud(self.screen)
 
-        self.player = Player(self.screen, "jogo\sprites\player.png")
+        self.player = Player(self.screen)
         self.player.rect.center = self.screen.get_rect().center
         self.player.shooting = False
 
-        self.fase = Tutorial(self.screen, "jogo\sprites\FUNDOTESTE1.PNG", self.player, self.delta_time)
+        self.fase = Tutorial(self.screen, self.player, self.delta_time)
 
     def handle_events(self):
         self.delta_time = self.clock.tick(FPS)/1000
@@ -41,9 +40,6 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         if self.game_state != MENU:
                             self.game_state = PAUSADO
-
-                    elif event.key == pygame.MOUSEBUTTONDOWN:
-                        self.mouse = True
 
                     #Trocar de arma
                     if event.key == pygame.K_1:
@@ -82,7 +78,7 @@ class Game:
 
                     elif event.key == pygame.K_r:
                         if self.player.arma == PISTOLA:
-                            self.player.m_pistola = 7
+                            self.player.m_pistola = 10
                         elif self.player.arma == METRALHADORA:
                             self.player.m_metralhadora = 30
 
@@ -103,7 +99,7 @@ class Game:
                         self.player.running = 1
 
     def render(self):
-        self.screen.fill('YELLOW')
+        self.screen.fill('yellow')
         if self.game_state == MENU:
             self.game_state = mostrar_menu(self.screen, self.game_state)
 
@@ -129,7 +125,7 @@ class Game:
         self.player.trade_weapons()
         self.player.aim()
 
-        self.player.shoot()
+        self.player.shoot(self.delta_time)
         
         for bala in self.player.shots:
             bala.update(self.delta_time)

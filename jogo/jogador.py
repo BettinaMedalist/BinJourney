@@ -2,8 +2,8 @@ from classes.tiro import*
 from constantes import*
 
 class Player(GameObject):
-    def __init__(self, screen, image_path):
-        super().__init__(screen, image_path)
+    def __init__(self, screen):
+        super().__init__(screen, "jogo\sprites\player_semarma.png")
         self.vidas = 3
 
         self.speed = 100
@@ -15,8 +15,9 @@ class Player(GameObject):
 
         self.running = 1
 
-        self.m_pistola = 7
+        self.m_pistola = 10
         self.m_metralhadora = 30
+        self.cadence_metralhadora = 0
 
         self.shooting = False
 
@@ -37,18 +38,21 @@ class Player(GameObject):
         self.image = rotated_image
         self.rect = new_rect
     
-    def shoot(self):
+    def shoot(self, delta_time):
+        self.cadence_metralhadora += delta_time
         if self.shooting:
             if self.arma == PISTOLA and self.m_pistola > 0:
-                self.shots.append(Tiro(self.screen, "jogo\sprites\player.png", self))
+                self.shots.append(Tiro(self.screen, self))
                 self.m_pistola -= 1
                 self.shooting = False
             
-            elif self.arma == METRALHADORA and self.m_metralhadora > 0:
-                self.shots.append(Tiro(self.screen, "jogo\sprites\player.png", self))
+            elif self.arma == METRALHADORA and self.m_metralhadora > 0 and self.cadence_metralhadora >= 0.1:
+                self.shots.append(Tiro(self.screen, self))
                 self.m_metralhadora -= 1
+                self.cadence_metralhadora = 0
             if self.m_metralhadora <= 0:
                 self.shooting = False
+            cadence = True
 
 
     def trade_weapons(self):
@@ -62,5 +66,5 @@ class Player(GameObject):
         self.rect = self.original_image.get_rect(center=self.rect.center)
         self.image = self.original_image
 
-    def collision(self):
+    def movement(self):
         pass

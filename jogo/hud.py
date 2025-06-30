@@ -15,7 +15,7 @@ class Hud():
     def mostrar_vida(self, player):
         vidas = []
         for i in range(player.vidas):
-            vidas.append(GameObject(self.screen, "jogo\sprites\life.png", 20 + i * 90, 20))
+            vidas.append(GameObject(self.screen, "jogo\sprites\life.png", 20 + i * 50, 20))
     
         for vida in vidas:
             vida.draw()
