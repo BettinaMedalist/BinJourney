@@ -7,6 +7,11 @@ class Inimigo(GameObject):
         original_image = self.image
         rotated_image = pygame.transform.rotate(original_image, angle)
         self.image = rotated_image
+        self.furtivo = False
+    
+    def movement(self):
+        if not self.furtivo:
+            pass
 
 class Inimigo_Pistola(Inimigo):
     def __init__(self, screen, angle, x, y):

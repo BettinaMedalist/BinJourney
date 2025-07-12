@@ -54,12 +54,16 @@ class Game:
                     #Mirar e atirar
                     if event.key == pygame.K_RIGHT:
                         self.player.angle = DIREITA
+                        self.player.shooting = True
                     elif event.key == pygame.K_UP:
                         self.player.angle = CIMA
+                        self.player.shooting = True
                     elif event.key == pygame.K_LEFT:
                         self.player.angle = ESQUERDA
+                        self.player.shooting = True
                     elif  event.key == pygame.K_DOWN:
                         self.player.angle = BAIXO
+                        self.player.shooting = True
 
                     if event.key == pygame.K_w:
                         self.player.up = self.player.speed
@@ -73,9 +77,6 @@ class Game:
                     if event.key == pygame.K_LSHIFT:
                         self.player.running = 3
 
-                    elif event.key == pygame.K_SPACE:
-                        self.player.shooting = True
-
                     elif event.key == pygame.K_r:
                         if self.player.arma == PISTOLA:
                             self.player.m_pistola = 10
@@ -83,7 +84,13 @@ class Game:
                             self.player.m_metralhadora = 30
 
                 elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_RIGHT:
+                        self.player.shooting = False
+                    if event.key == pygame.K_UP:
+                        self.player.shooting = False
+                    if event.key == pygame.K_LEFT:
+                        self.player.shooting = False
+                    if  event.key == pygame.K_DOWN:
                         self.player.shooting = False
                     
                     if event.key == pygame.K_w:
