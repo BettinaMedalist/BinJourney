@@ -23,7 +23,8 @@ class Player(GameObject):
         self.cadence_metralhadora = 0
 
         self.shooting = False
-
+        
+        self.armas_desbloqueadas = {MAO}
         self.arma = MAO
         self.sprites = {
             "mao": carregar_imagem("jogo/sprites/player_semarma.png"),
@@ -93,12 +94,12 @@ class Player(GameObject):
             self.vidas -= quantidade
             self.is_invulnerable = True
             self.invulnerability_end_time = pygame.time.get_ticks() / 1000 + self.invulnerability_duration
-            self.visible = True  # Garante que o jogador seja visível ao tomar dano
+            self.visible = True
             self.blink_timer = 0
             if self.vidas <= 0:
-                print("GAME OVER") # Futuramente, pode levar a uma tela de game over
-            return True # Retorna que o dano foi aplicado
-        return False # Retorna que o jogador estava invulnerável
+                print("GAME OVER")
+            return True
+        return False
     
     def draw(self):
         if self.visible:

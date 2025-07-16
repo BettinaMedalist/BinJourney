@@ -1,7 +1,7 @@
-# Arquivo: classes/fase.py (Substitua o conteúdo)
 from classes.health_drop import*
 from classes.inimigo import*
 from classes.upgrade import*
+from classes.caixaarma import*
 from constantes import*
 import math
 import random
@@ -19,6 +19,8 @@ class Fase(GameObject):
         self.objects = []
 
         self.drops = []
+
+        self.caixa_de_armas = []
 
         self.player = player
 
@@ -38,6 +40,10 @@ class Fase(GameObject):
             pass
         elif object_type == "upgrade":
             self.objects.append(Upgrade(self.screen, x, y))
+
+    def add_caixa_arma(self, x, y, tipo_arma):
+        self.caixa_de_armas.append(CaixaArma(self.screen, x, y, tipo_arma))
+
     
     def update(self, delta_time):
         #Movimentação que vai afetar a todas as entidades para fazer o player andar
@@ -53,7 +59,10 @@ class Fase(GameObject):
             objeto.rect.x += camera_move_x
             objeto.rect.y += camera_move_y
 
-            if self.player.rect.colliderect(objeto.rect):
+            if hasattr(objeto, 'hitbox'):
+                objeto.hitbox.center = objeto.rect.center
+            
+            if hasattr(objeto, 'hitbox') and self.player.hitbox.colliderect(objeto.hitbox):
                 if isinstance(objeto, Upgrade):
                     self.player.max_vidas += 1
                     self.player.vidas = self.player.max_vidas
@@ -63,6 +72,17 @@ class Fase(GameObject):
         for bala in self.player.shots:
             bala.rect.x += camera_move_x
             bala.rect.y += camera_move_y
+
+        for caixa in self.caixa_de_armas:
+            caixa.rect.x += camera_move_x
+            caixa.rect.y += camera_move_y
+            caixa.hitbox.center = caixa.rect.center
+
+            if not caixa.usada and self.player.hitbox.colliderect(caixa.hitbox):
+                caixa.abrir()
+                self.player.armas_desbloqueadas.add(caixa.tipo_arma)
+                self.player.arma = caixa.tipo_arma
+                print(f"Arma adquirida por toque: {caixa.tipo_arma}")
         
         for inimigo in self.enemies:
             if hasattr(inimigo, 'ponto_a'):
@@ -100,7 +120,7 @@ class Fase(GameObject):
                 self.drops.remove(drop)
                 continue
                     
-            if self.player.rect.colliderect(drop.rect):
+            if self.player.hitbox.colliderect(drop.hitbox):
                 if self.player.vidas < self.player.max_vidas:
                     self.player.vidas += 1
                     self.drops.remove(drop)
@@ -131,7 +151,7 @@ class Fase(GameObject):
     def checar_colisoes(self):
         for bala in self.player.shots[:]:
             for inimigo_atingido in self.enemies[:]:
-                if inimigo_atingido.rect.colliderect(bala):
+                if inimigo_atingido.hitbox.colliderect(bala.rect):
                     
                     era_furtivo = self.player.running == 1 and (inimigo_atingido.estado == ESTADO_PATRULHA or inimigo_atingido.estado == ESTADO_RETORNO)
 
@@ -191,6 +211,9 @@ class Fase(GameObject):
             if inimigo.icone_estado_atual:
                 icone_rect = inimigo.icone_estado_atual.get_rect(center=(inimigo.rect.centerx, inimigo.rect.top - 20))
                 self.screen.blit(inimigo.icone_estado_atual, icone_rect)
+        
+        for caixa in self.caixa_de_armas:
+            caixa.draw()
 
         for objeto in self.objects:
             objeto.draw()

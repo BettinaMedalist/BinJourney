@@ -54,11 +54,14 @@ class Game:
                             self.game_state = RODANDO
 
                     if event.key == pygame.K_1:
-                        self.player.arma = MAO
+                        if MAO in self.player.armas_desbloqueadas:
+                            self.player.arma = MAO
                     elif event.key == pygame.K_2:
-                        self.player.arma = PISTOLA
+                        if PISTOLA in self.player.armas_desbloqueadas:
+                            self.player.arma = PISTOLA
                     elif event.key == pygame.K_3:
-                        self.player.arma = METRALHADORA
+                        if METRALHADORA in self.player.armas_desbloqueadas:
+                            self.player.arma = METRALHADORA
                     elif event.key == pygame.K_4:
                         self.player.arma = MELEE
                     if event.key == pygame.K_RIGHT:
