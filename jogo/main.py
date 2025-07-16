@@ -37,7 +37,9 @@ class Game:
     def handle_events(self):
         self.delta_time = self.clock.tick(FPS)/1000
 
-        for event in pygame.event.get():
+        self.events = pygame.event.get()
+
+        for event in self.events:
                 if event.type == pygame.QUIT:
                     self.running = False
 
@@ -111,7 +113,7 @@ class Game:
     def render(self):
         self.screen.fill('yellow')
         if self.game_state == MENU:
-            self.game_state = self.menu_principal.executar(self.game_state)
+            self.game_state = self.menu_principal.executar(self.game_state, self.events)
         elif self.game_state == RODANDO:
             self.fase.render()
             self.player.draw()
@@ -124,7 +126,7 @@ class Game:
             self.player.draw()
             for bala in self.player.shots:
                 bala.draw()
-            self.game_state = self.menu_pause.executar(self.game_state)
+            self.game_state = self.menu_pause.executar(self.game_state, self.events)
         elif self.game_state == SAIR:
             self.running = False
         pygame.display.flip()

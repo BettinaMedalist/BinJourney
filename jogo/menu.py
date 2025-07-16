@@ -22,17 +22,18 @@ class MenuPrincipal:
             "sair": b_sair
         }
 
-    def executar(self, game_state):
+    def executar(self, game_state, events):
         self.botoes["jogar"].draw()
         self.botoes["config"].draw()
         self.botoes["sair"].draw()
 
-        if self.botoes["jogar"].apertado():
-            return RODANDO
-        elif self.botoes["config"].apertado():
-            return CONFIG
-        elif self.botoes["sair"].apertado():
-            return SAIR
+        for event in events:
+            if self.botoes["jogar"].handle_event(event):
+                    return RODANDO
+            elif self.botoes["config"].handle_event(event):
+                return CONFIG
+            elif self.botoes["sair"].handle_event(event):
+                return SAIR
         
         return game_state
 
@@ -56,16 +57,17 @@ class MenuPause:
             "menu_principal": b_menu_principal
         }
 
-    def executar(self, game_state):
+    def executar(self, game_state, events):
         self.botoes["voltar"].draw()
         self.botoes["config"].draw()
         self.botoes["menu_principal"].draw()
 
-        if self.botoes["voltar"].apertado():
-            return RODANDO
-        elif self.botoes["config"].apertado():
-            return CONFIG
-        elif self.botoes["menu_principal"].apertado():
-            return MENU
+        for event in events:
+            if self.botoes["voltar"].handle_event(event):
+                return RODANDO
+            elif self.botoes["config"].handle_event(event):
+                return CONFIG
+            elif self.botoes["menu_principal"].handle_event(event):
+                return MENU
             
         return game_state
