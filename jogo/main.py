@@ -43,13 +43,11 @@ class Game:
 
                     #Trocar de arma
                     if event.key == pygame.K_1:
-                        self.player.arma = MAO
+                        self.player.trade_weapons(MAO)
                     elif event.key == pygame.K_2:
-                        self.player.arma = PISTOLA
+                        self.player.trade_weapons(PISTOLA)
                     elif event.key == pygame.K_3:
-                        self.player.arma = METRALHADORA
-                    elif event.key == pygame.K_4:
-                        self.player.arma = MELEE
+                        self.player.trade_weapons(METRALHADORA)
 
                     #Mirar e atirar
                     if event.key == pygame.K_RIGHT:
@@ -100,40 +98,35 @@ class Game:
 
     def render(self):
         self.screen.fill('yellow')
+        
         if self.game_state == MENU:
             self.game_state = mostrar_menu(self.screen, self.game_state)
 
         elif self.game_state == RODANDO:
-            self.fase.render()
-            self.player.draw()
+            
+            self.fase.render() 
             self.hud.mostrar_vida(self.player)
             self.hud.mostrar_arma(self.player)
-            for bala in self.player.shots:
-                bala.draw()
+            pygame.draw.rect(self.screen, (255, 255, 0), self.player.rect, 2)
         
-        #elif game_state == CONFIG:
-
         elif self.game_state == PAUSADO:
             self.game_state = mostrar_pause(self.screen, self.game_state)
 
         elif self.game_state == SAIR:
-            self.game_state = False
-
+            self.running = False
+            
         pygame.display.flip()
 
-    def update(self):
-        self.player.trade_weapons()
-        self.player.aim()
 
-        self.player.shoot(self.delta_time)
+    def update(self):
+        #att o player e permite ele colidir com as paredes
+        self.player.update(self.fase.walls, self.delta_time, self.fase.all_sprites)
         
-        for bala in self.player.shots:
-            bala.update(self.delta_time)
-            if not self.screen.get_rect().colliderect(bala.rect):
-                self.player.shots.remove(bala)
+        #att tiros
+        self.player.shots.update(self.delta_time)
         
-        self.fase.movement(self.player)
-        self.fase.running()
+        self.fase.update()
+        self.fase.movement()
 
     def run(self):
         while self.running:

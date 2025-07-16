@@ -1,5 +1,8 @@
-from classes.game_object import*
+import pygame
+from constantes import TILE_SIZE # Importe TILE_SIZE
 
-class Parede(GameObject):
-    def __init__(self, screen, x, y):
-        super().__init__(screen, "jogo\sprites\parede.png", x, y)
+
+class Parede(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
