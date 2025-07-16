@@ -1,4 +1,5 @@
 from utils.funcoes import*
+import pygame # Adicione o import do pygame aqui
 
 #A maior parte dos sprites do jogo terá essa classe para facilitar a colisão e o posicionamento dos objetos
 class GameObject():
@@ -10,9 +11,10 @@ class GameObject():
             self.image = carregar_imagem(image_path)
 
         self.rect = self.image.get_rect()
-
         self.rect.topleft = (x, y)
+
+        self.hitbox = self.rect.copy()
 
     def draw(self):
         self.screen.blit(self.image, self.rect)
-   
+        pygame.draw.rect(self.screen, (255, 0, 0), self.hitbox, 2)

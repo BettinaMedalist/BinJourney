@@ -2,12 +2,12 @@ from classes.fase import*
 from constantes import*
 
 class Tutorial(Fase):
-    def __init__(self, screen, player, delta_time):
-        super().__init__(screen, "jogo\sprites\FUNDOTESTE1-sheet.png", player, delta_time)
-        self.add_enemy(0, ESQUERDA, 1, 1)
-        self.add_enemy(0, CIMA, 300, 500)
-        self.add_enemy(0, DIREITA, 150, 180)
-        self.add_enemy(0, BAIXO, 700, 100)
-        self.add_enemy(0, ESQUERDA, 650, 800)
-        self.add_enemy(0, 170, 70, 400)
-    
+    def __init__(self, screen, player):
+        super().__init__(screen, "jogo/sprites/FUNDOTESTE1-sheet.png", player)
+        self.add_enemy("pistola", ESQUERDA, 1, 1)
+        self.add_enemy("pistola_patrulha", CIMA, 300, 1600, (700, 900))
+        self.add_enemy("metralhadora", DIREITA, 150, 180)
+        self.add_enemy("pistola", BAIXO, 700, 100)
+        self.add_enemy("metralhadora", ESQUERDA, 650, 800)
+        self.add_enemy("pistola", ESQUERDA, 70, 400)
+        self.add_enemy("meelee", ESQUERDA, 800, 400)
