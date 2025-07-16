@@ -1,7 +1,7 @@
 # Arquivo: classes/fase.py (Substitua o conteúdo)
 from classes.health_drop import*
 from classes.inimigo import*
-from classes.parede import*
+from classes.upgrade import*
 from constantes import*
 import math
 import random
@@ -30,13 +30,14 @@ class Fase(GameObject):
             self.enemies.append(Inimigo_Metralhadora(self.screen, angle, x, y))
         elif enemy_type == "pistola_patrulha":
             self.enemies.append(Inimigo_Pistola_Patrulha(self.screen, angle, x, y, ponto_b))
-        # SUBSTITUA "melee" por "melee_patrulha"
         elif enemy_type == "melee":
             self.enemies.append(Inimigo_Melee(self.screen, angle, x, y))
             
     def add_object(self, object_type, angle, x, y):
         if object_type == "parede":
-            self.objects.append(Parede(self.screen, x, y))
+            pass
+        elif object_type == "upgrade":
+            self.objects.append(Upgrade(self.screen, x, y))
     
     def update(self, delta_time):
         #Movimentação que vai afetar a todas as entidades para fazer o player andar
@@ -48,9 +49,15 @@ class Fase(GameObject):
         self.rect.y += camera_move_y
 
         #Faz os objetos andarem
-        for objeto in self.objects:
+        for objeto in self.objects[:]:
             objeto.rect.x += camera_move_x
             objeto.rect.y += camera_move_y
+
+            if self.player.rect.colliderect(objeto.rect):
+                if isinstance(objeto, Upgrade):
+                    self.player.max_vidas += 1
+                    self.player.vidas = self.player.max_vidas
+                    self.objects.remove(objeto)
         
         #Impedem que as balas andem junto com o player
         for bala in self.player.shots:

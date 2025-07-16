@@ -11,3 +11,4 @@ class Tutorial(Fase):
         self.add_enemy("metralhadora", ESQUERDA, 650, 800)
         self.add_enemy("pistola", ESQUERDA, 70, 400)
         self.add_enemy("meelee", ESQUERDA, 800, 400)
+        self.add_object("upgrade", CIMA,  1000, 650)

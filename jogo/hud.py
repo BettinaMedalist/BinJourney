@@ -11,14 +11,21 @@ class Hud():
         }
         self.arma = self.arma_sprite["metralhadora"]
 
-        self.max_vidas = 3
         self.vidas_sprites = []
-        for i in range(self.max_vidas):
-            self.vidas_sprites.append(GameObject(self.screen, "jogo/sprites/life.png", 20 + i * 50, 20))
+        self.max_vidas_conhecida = 0
 
     def mostrar_vida(self, player):
+        if player.max_vidas > self.max_vidas_conhecida:
+            self.max_vidas_conhecida = player.max_vidas
+            self.vidas_sprites = []
+            
+
+            for i in range(self.max_vidas_conhecida):
+                self.vidas_sprites.append(GameObject(self.screen, "jogo/sprites/life.png", 20 + i * 50, 20))
+                
         for i in range(player.vidas):
-            self.vidas_sprites[i].draw()
+            if i < len(self.vidas_sprites):
+                self.vidas_sprites[i].draw()
 
     def mostrar_arma(self, player):
         if player.arma == PISTOLA:

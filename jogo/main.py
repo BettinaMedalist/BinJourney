@@ -29,7 +29,9 @@ class Game:
         self.player.shooting = False
         
         #Fase atual
-        self.fase = Tutorial(self.screen, self.player)
+        self.fase_atual_tipo = Tutorial
+        self.fase = self.fase_atual_tipo(self.screen, self.player)
+
         self.menu_principal = MenuPrincipal(self.screen)
         self.menu_pause = MenuPause(self.screen)
 
@@ -133,6 +135,22 @@ class Game:
 
     #Lida com o comportamento das entidades
     def update(self):
+        if self.player.vidas <= 0:
+            self.game_state = MORTO
+
+        if self.game_state == MORTO:
+            self.fase = self.fase_atual_tipo(self.screen, self.player)
+            
+            self.player.vidas = self.player.max_vidas
+            
+            self.player.is_invulnerable = False
+            self.player.visible = True
+            
+            self.player.rect.center = self.screen.get_rect().center
+            
+            self.game_state = RODANDO
+            return
+        
         if self.game_state == RODANDO:
             self.player.trade_weapons()
             self.player.aim()
