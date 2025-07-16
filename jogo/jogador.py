@@ -3,18 +3,20 @@ from constantes import*
 
 class Player(GameObject):
     def __init__(self, screen):
-        super().__init__(screen, "jogo\sprites\player_semarma.png")
+        super().__init__(screen, "jogo/sprites/player_semarma.png")
         self.vidas = 3
+        self.max_vidas = 3
 
         self.speed = 700
         
-        self.up = 0
-        self.down = 0
         self.left = 0
         self.right = 0
-        self.running = 1
+        self.up = 0
+        self.down = 0
 
-        self.direction = pygame.math.Vector2()
+        self.hitbox = self.rect.inflate(-50, -50)
+
+        self.running = 1
 
         self.m_pistola = 10
         self.m_metralhadora = 30
@@ -22,17 +24,25 @@ class Player(GameObject):
 
         self.shooting = False
 
+        self.armas_desbloqueadas = {MAO}
         self.arma = MAO
         self.sprites = {
-            "mao": carregar_imagem("jogo\sprites\player_semarma.png"),
-            "pistola": carregar_imagem("jogo\sprites\player_pistola.png"),
-            "metralhadora": carregar_imagem("jogo\sprites\player_metralhadora.png")
+            "mao": carregar_imagem("jogo/sprites/player_semarma.png"),
+            "pistola": carregar_imagem("jogo/sprites/player_pistola.png"),
+            "metralhadora": carregar_imagem("jogo/sprites/player_metralhadora.png")
         }
 
         self.shots = pygame.sprite.Group() #self.shots = [], agr é no groups
         
         self.original_image = self.image
-    
+
+        self.is_invulnerable = False
+        self.invulnerability_duration = 3
+        self.invulnerability_end_time = 0
+        self.blink_timer = 0
+        self.blink_rate = 0.1
+        self.visible = True
+
     def update(self, walls_group, delta_time, all_sprites_group):
         # 1. Converte os inputs (up, down, left, right) em um vetor de direção
         # (Aqui está o "elo perdido" que corrigimos)
@@ -44,6 +54,7 @@ class Player(GameObject):
         self.aim()
         self.shoot(delta_time, all_sprites_group)
         # O trade_weapons é melhor ser chamado só no evento de troca de tecla
+
 
 
     def aim(self):
@@ -65,7 +76,7 @@ class Player(GameObject):
                 tiro_criado = Tiro(self.screen, self)
                 self.m_metralhadora -= 1
                 self.cadence_metralhadora = 0
-                
+
             if tiro_criado:
                 self.shots.add(tiro_criado)
                 all_sprites_group.add(tiro_criado)
@@ -89,8 +100,38 @@ class Player(GameObject):
             self.original_image = self.sprites["metralhadora"]
             self.arma_cadencia = 0.15
             self.arma_dano = 1
-        
+
         self.rect = self.original_image.get_rect(center=centro_antigo)
 
-    def movement(self):
-        pass
+    #precisa mudar nome para n dar conflito
+    def update(self, delta_time):
+        self.hitbox.center = self.rect.center
+
+        if self.is_invulnerable:
+            current_time = pygame.time.get_ticks() / 1000
+
+            self.blink_timer += delta_time
+            if self.blink_timer >= self.blink_rate:
+                self.visible = not self.visible
+                self.blink_timer = 0
+
+            if current_time >= self.invulnerability_end_time:
+                self.is_invulnerable = False
+                self.visible = True
+
+    def sofrer_dano(self, quantidade):
+        """Reduz a vida do jogador e ativa a invulnerabilidade se ele não estiver invulnerável."""
+        if not self.is_invulnerable:
+            self.vidas -= quantidade
+            self.is_invulnerable = True
+            self.invulnerability_end_time = pygame.time.get_ticks() / 1000 + self.invulnerability_duration
+            self.visible = True
+            self.blink_timer = 0
+            if self.vidas <= 0:
+                print("GAME OVER")
+            return True
+        return False
+
+    def draw(self):
+        if self.visible:
+            self.screen.blit(self.image, self.rect)
