@@ -1,7 +1,4 @@
 from classes.fase import Fase
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 from constantes import *
 
 LAYOUT_FASE2 = [
@@ -19,7 +16,7 @@ LAYOUT_FASE2 = [
 'W                                            W',
 'W                                       P    W',
 'W                                            W',
-'W        WWWWWWWWWWWW     WWWWWWWWWWW        W',
+'W        WWWWWWWWWWW       WWWWWWWWWW        W',
 'W        W                          W        W',
 'W        W                          W        W',
 'W    J   W     G      M        G    W L      W',
@@ -37,12 +34,3 @@ class Fase2(Fase):
 
         # 2. Chama o método para construir o nível usando o layout e o tamanho do tile
         self.create_level(LAYOUT_FASE2, TILE_SIZE)
-=======
-from constantes import *
->>>>>>> Stashed changes
-=======
-from constantes import *
->>>>>>> Stashed changes
-=======
-from constantes import *
->>>>>>> Stashed changes
