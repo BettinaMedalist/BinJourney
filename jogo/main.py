@@ -21,8 +21,8 @@ class Game:
         self.hud = Hud(self.screen)
         self.player = Player(self.screen)
         self.player.rect.center = self.screen.get_rect().center
-        self.fase_atual_tipo = Tutorial
-        self.fase = self.fase_atual_tipo(self.screen, self.player, self.delta_time)
+        self.fase_atual_tipo = Fase1
+        self.fase = self.fase_atual_tipo(self.screen, self.player)
         self.menu_principal = MenuPrincipal(self.screen)
         self.menu_pause = MenuPause(self.screen)
 
