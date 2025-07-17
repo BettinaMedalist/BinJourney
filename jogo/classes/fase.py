@@ -177,8 +177,9 @@ class Fase:
                 if inimigo.estado == ESTADO_ATAQUE or inimigo.estado == ESTADO_BUSCA:
                     inimigo.alvo_busca = None
                     inimigo.estado = ESTADO_RETORNO
-                    inimigo.px += camera_move_x
-                    inimigo.py += camera_move_y
+                    
+            inimigo.px += camera_move_x
+            inimigo.py += camera_move_y
 
             for bala in inimigo.shots:
                 bala.rect.x += camera_move_x
