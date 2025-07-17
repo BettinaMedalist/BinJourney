@@ -72,9 +72,13 @@ class Game:
         if self.game_state == MENU:
             self.game_state = self.menu_principal.executar(self.game_state, self.events)
         elif self.game_state == RODANDO:
+<<<<<<< Updated upstream
             if not self.fase.enemies:
                 self.go_to_next_level()
 
+=======
+            self.fase_atual_tipo = Fase1
+>>>>>>> Stashed changes
             self.fase.render()
             self.player.draw()
             # Desenha todos os tiros do jogador de uma vez
