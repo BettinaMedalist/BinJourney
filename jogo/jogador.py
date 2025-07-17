@@ -4,6 +4,7 @@ from constantes import*
 class Player(GameObject):
     def __init__(self, screen):
         super().__init__(screen, "jogo/sprites/player_semarma.png")
+        self._layer = CAMADA_JOGADOR
         self.vidas = 3
         self.max_vidas = 3
 

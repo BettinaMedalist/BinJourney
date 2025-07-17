@@ -2,6 +2,7 @@ from classes.health_drop import*
 from classes.inimigo import*
 from classes.upgrade import*
 from classes.caixaarma import*
+from classes.tile import*
 from constantes import*
 import math
 import random
@@ -10,54 +11,99 @@ import pygame
 RAIO_SOM_METRALHADORA = 400
 RAIO_SOM_CORRIDA = 200
 
-class Fase(GameObject):
-    def __init__(self, screen, image_path, player):
-        super().__init__(screen, image_path)
+
+class Fase:
+    def __init__(self, screen, player):
         # As listas foram substituídas por Grupos de Sprites
+        self.screen = screen
+        self.player = player
+
+        self.visible_sprites = pygame.sprite.LayeredUpdates()
+        self.obstacles_sprites = pygame.sprite.Group()
+
         self.enemies = pygame.sprite.Group()
         self.objects = pygame.sprite.Group()
         self.drops = pygame.sprite.Group()
         self.caixa_de_armas = pygame.sprite.Group()
 
-        self.player = player
+        self.visible_sprites.add(self.player)
+
+    def create_level(self, layout, tile_size):
+        chao_tile_img = pygame.image.load("jogo/sprites/chaoconcreto.png").convert_alpha()
+        parede_tile_img = pygame.image.load("jogo/sprites/paredetuto.png").convert_alpha()
+
+        for row_index, row in enumerate(layout):
+            for col_index, tile_code in enumerate(row):
+                x = col_index * tile_size
+                y = row_index * tile_size
+
+                # Lógica para o chão (desenhado sob todos os objetos)
+                if tile_code != 'W':
+                    Tile(chao_tile_img, x, y, groups=[self.visible_sprites], layer=CAMADA_CHAO)
+
+                # Lógica para os objetos específicos
+                if tile_code == 'W': # Parede
+                    Tile(parede_tile_img, x, y, groups=[self.visible_sprites, self.obstacles_sprites], layer=CAMADA_PAREDE)
+
+                elif tile_code == 'J':  # Jogador
+                    self.player.rect.topleft = (x, y)
+
+                elif tile_code == 'G':  # Inimigo com Pistola
+                    self.add_enemy("pistola", 0, x, y)
 
     def add_enemy(self, enemy_type, angle, x, y, ponto_b=None):
         # Adiciona inimigos ao grupo .enemies
+        inimigo = None
         if enemy_type == "pistola":
-            self.enemies.add(Inimigo_Pistola(self.screen, angle, x, y))
+            inimigo = (Inimigo_Pistola(self.screen, angle, x, y))
         elif enemy_type == "metralhadora":
-            self.enemies.add(Inimigo_Metralhadora(self.screen, angle, x, y))
+            inimigo = (Inimigo_Metralhadora(self.screen, angle, x, y))
         elif enemy_type == "pistola_patrulha":
-            self.enemies.add(Inimigo_Pistola_Patrulha(self.screen, angle, x, y, ponto_b))
+            inimigo = (Inimigo_Pistola_Patrulha(self.screen, angle, x, y, ponto_b))
         elif enemy_type == "melee":
-            self.enemies.add(Inimigo_Melee(self.screen, angle, x, y))
+            inimigo = (Inimigo_Melee(self.screen, angle, x, y))
+        
+        if inimigo:
+            inimigo._layer = CAMADA_INIMIGO
+            self.visible_sprites.add(inimigo)
+            self.enemies.add(inimigo)
             
     def add_object(self, object_type, angle, x, y):
         # Adiciona objetos ao grupo .objects
+        objeto = None
         if object_type == "parede":
             pass
         elif object_type == "upgrade":
-            self.objects.add(Upgrade(self.screen, x, y))
+            objeto = (Upgrade(self.screen, x, y))
+        if objeto:
+            self.visible_sprites.add(objeto)  
+            self.objects.add(objeto)      
 
     def add_caixa_arma(self, x, y, tipo_arma):
         # Adiciona caixas ao grupo .caixa_de_armas
-        self.caixa_de_armas.add(CaixaArma(self.screen, x, y, tipo_arma))
+        
+        caixa = (CaixaArma(self.screen, x, y, tipo_arma))
+        self.caixa_de_armas.add(caixa)
+        self.visible_sprites.add(caixa)
 
     
     def update(self, delta_time):
         camera_move_x = (self.player.left - self.player.right) * delta_time * self.player.running
         camera_move_y = (self.player.up - self.player.down) * delta_time * self.player.running
         
-        self.rect.x += camera_move_x
-        self.rect.y += camera_move_y
-
-        # Atualiza a posição de todos os sprites nos grupos com base na câmera
-        for group in [self.objects, self.player.shots, self.caixa_de_armas, self.drops]:
-            for sprite in group:
+        for sprite in self.visible_sprites:
+            if sprite != self.player:
                 sprite.rect.x += camera_move_x
                 sprite.rect.y += camera_move_y
         
         # Lógica de colisão com upgrades
+        if pygame.sprite.spritecollide(self.player, self.obstacles_sprites, False, pygame.sprite.collide_rect_ratio(0.75)):
+            # 3. Se colidiu, desfaz o movimento de TODOS os sprites para impedir que a câmera avance
+            for sprite in self.visible_sprites:
+                if sprite != self.player:
+                    sprite.rect.x -= camera_move_x
+                    sprite.rect.y -= camera_move_y
+
         collided_upgrades = pygame.sprite.spritecollide(self.player, self.objects, True, pygame.sprite.collide_rect_ratio(0.75))
         for upgrade in collided_upgrades:
             if isinstance(upgrade, Upgrade):
@@ -83,8 +129,8 @@ class Fase(GameObject):
                 inimigo.alvo_busca[0] += camera_move_x
                 inimigo.alvo_busca[1] += camera_move_y
 
-            inimigo.rect.x += camera_move_x + (inimigo.vx * delta_time)
-            inimigo.rect.y += camera_move_y + (inimigo.vy * delta_time)
+            inimigo.rect.x += (inimigo.vx * delta_time)
+            inimigo.rect.y += (inimigo.vy * delta_time)
             inimigo.px += camera_move_x
             inimigo.py += camera_move_y
 
@@ -175,15 +221,10 @@ class Fase(GameObject):
                         print("GAME OVER")
 
     def render(self):
-        self.draw()
+        self.visible_sprites.draw(self.screen)
         
         # Usa o método .draw() dos grupos para renderizar todos os sprites de uma vez
-        self.objects.draw(self.screen)
-        self.caixa_de_armas.draw(self.screen)
-        self.drops.draw(self.screen)
-        
         for inimigo in self.enemies:
-            inimigo.draw() # Desenha o inimigo individualmente
             inimigo.draw_vision_cone()
             inimigo.shots.draw(self.screen) # Desenha todos os tiros do inimigo
             if inimigo.icone_estado_atual:

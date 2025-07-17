@@ -75,11 +75,12 @@ class Game:
             self.player.shots.draw(self.screen)
             self.hud.mostrar_vida(self.player)
             self.hud.mostrar_arma(self.player)
+
         elif self.game_state == PAUSADO:
             self.fase.render()
-            self.player.draw()
             self.player.shots.draw(self.screen)
             self.game_state = self.menu_pause.executar(self.game_state, self.events)
+            
         elif self.game_state == SAIR:
             self.running = False
         pygame.display.flip()

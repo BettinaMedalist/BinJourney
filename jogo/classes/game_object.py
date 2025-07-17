@@ -12,8 +12,11 @@ class GameObject(pygame.sprite.Sprite):
         if image_path:
             self.image = carregar_imagem(image_path)
 
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
+        if self.image:
+            self.rect = self.image.get_rect()
+            self.rect.topleft = (x, y)
+        else:
+            self.rect = pygame.Rect(x, y, 0, 0)
 
         self.hitbox = self.rect.copy()
 
