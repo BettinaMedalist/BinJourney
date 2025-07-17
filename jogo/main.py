@@ -41,8 +41,6 @@ class Game:
                     if PISTOLA in self.player.armas_desbloqueadas: self.player.arma = PISTOLA
                 elif event.key == pygame.K_3:
                     if METRALHADORA in self.player.armas_desbloqueadas: self.player.arma = METRALHADORA
-                elif event.key == pygame.K_4:
-                    self.player.arma = MELEE
                 if event.key == pygame.K_RIGHT: self.player.angle = DIREITA; self.player.shooting = True
                 elif event.key == pygame.K_UP: self.player.angle = CIMA; self.player.shooting = True
                 elif event.key == pygame.K_LEFT: self.player.angle = ESQUERDA; self.player.shooting = True
