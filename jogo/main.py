@@ -73,9 +73,13 @@ class Game:
             self.game_state = self.menu_principal.executar(self.game_state, self.events)
         elif self.game_state == RODANDO:
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             if not self.fase.enemies:
                 self.go_to_next_level()
 
+=======
+            self.fase_atual_tipo = Fase1
+>>>>>>> Stashed changes
 =======
             self.fase_atual_tipo = Fase1
 >>>>>>> Stashed changes
