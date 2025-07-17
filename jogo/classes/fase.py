@@ -13,124 +13,111 @@ RAIO_SOM_CORRIDA = 200
 class Fase(GameObject):
     def __init__(self, screen, image_path, player):
         super().__init__(screen, image_path)
-        #Lista de inimigos na fase
-        self.enemies = []
-        #Lista de paredes e obstaculos
-        self.objects = []
-
-        self.drops = []
-
-        self.caixa_de_armas = []
+        # As listas foram substituídas por Grupos de Sprites
+        self.enemies = pygame.sprite.Group()
+        self.objects = pygame.sprite.Group()
+        self.drops = pygame.sprite.Group()
+        self.caixa_de_armas = pygame.sprite.Group()
 
         self.player = player
 
-
     def add_enemy(self, enemy_type, angle, x, y, ponto_b=None):
+        # Adiciona inimigos ao grupo .enemies
         if enemy_type == "pistola":
-            self.enemies.append(Inimigo_Pistola(self.screen, angle, x, y))
+            self.enemies.add(Inimigo_Pistola(self.screen, angle, x, y))
         elif enemy_type == "metralhadora":
-            self.enemies.append(Inimigo_Metralhadora(self.screen, angle, x, y))
+            self.enemies.add(Inimigo_Metralhadora(self.screen, angle, x, y))
         elif enemy_type == "pistola_patrulha":
-            self.enemies.append(Inimigo_Pistola_Patrulha(self.screen, angle, x, y, ponto_b))
+            self.enemies.add(Inimigo_Pistola_Patrulha(self.screen, angle, x, y, ponto_b))
         elif enemy_type == "melee":
-            self.enemies.append(Inimigo_Melee(self.screen, angle, x, y))
+            self.enemies.add(Inimigo_Melee(self.screen, angle, x, y))
             
     def add_object(self, object_type, angle, x, y):
+        # Adiciona objetos ao grupo .objects
         if object_type == "parede":
             pass
         elif object_type == "upgrade":
-            self.objects.append(Upgrade(self.screen, x, y))
+            self.objects.add(Upgrade(self.screen, x, y))
 
     def add_caixa_arma(self, x, y, tipo_arma):
-        self.caixa_de_armas.append(CaixaArma(self.screen, x, y, tipo_arma))
+        # Adiciona caixas ao grupo .caixa_de_armas
+        self.caixa_de_armas.add(CaixaArma(self.screen, x, y, tipo_arma))
 
     
     def update(self, delta_time):
-        #Movimentação que vai afetar a todas as entidades para fazer o player andar
         camera_move_x = (self.player.left - self.player.right) * delta_time * self.player.running
         camera_move_y = (self.player.up - self.player.down) * delta_time * self.player.running
         
-        #Faz o fundo andar
         self.rect.x += camera_move_x
         self.rect.y += camera_move_y
 
-        #Faz os objetos andarem
-        for objeto in self.objects[:]:
-            objeto.rect.x += camera_move_x
-            objeto.rect.y += camera_move_y
-
-            if hasattr(objeto, 'hitbox'):
-                objeto.hitbox.center = objeto.rect.center
-            
-            if hasattr(objeto, 'hitbox') and self.player.hitbox.colliderect(objeto.hitbox):
-                if isinstance(objeto, Upgrade):
-                    self.player.max_vidas += 1
-                    self.player.vidas = self.player.max_vidas
-                    self.objects.remove(objeto)
+        # Atualiza a posição de todos os sprites nos grupos com base na câmera
+        for group in [self.objects, self.player.shots, self.caixa_de_armas, self.drops]:
+            for sprite in group:
+                sprite.rect.x += camera_move_x
+                sprite.rect.y += camera_move_y
         
-        #Impedem que as balas andem junto com o player
-        for bala in self.player.shots:
-            bala.rect.x += camera_move_x
-            bala.rect.y += camera_move_y
+        # Lógica de colisão com upgrades
+        collided_upgrades = pygame.sprite.spritecollide(self.player, self.objects, True, pygame.sprite.collide_rect_ratio(0.75))
+        for upgrade in collided_upgrades:
+            if isinstance(upgrade, Upgrade):
+                self.player.max_vidas += 1
+                self.player.vidas = self.player.max_vidas
 
-        for caixa in self.caixa_de_armas:
-            caixa.rect.x += camera_move_x
-            caixa.rect.y += camera_move_y
-            caixa.hitbox.center = caixa.rect.center
-
-            if not caixa.usada and self.player.hitbox.colliderect(caixa.hitbox):
+        # Lógica de colisão com caixas de armas
+        collided_caixas = pygame.sprite.spritecollide(self.player, self.caixa_de_armas, False, pygame.sprite.collide_rect_ratio(0.75))
+        for caixa in collided_caixas:
+            if not caixa.usada:
                 caixa.abrir()
                 self.player.armas_desbloqueadas.add(caixa.tipo_arma)
                 self.player.arma = caixa.tipo_arma
                 print(f"Arma adquirida por toque: {caixa.tipo_arma}")
         
+        # Atualiza inimigos e seus tiros
         for inimigo in self.enemies:
             if hasattr(inimigo, 'ponto_a'):
                 inimigo.ponto_a = (inimigo.ponto_a[0] + camera_move_x, inimigo.ponto_a[1] + camera_move_y)
                 inimigo.ponto_b = (inimigo.ponto_b[0] + camera_move_x, inimigo.ponto_b[1] + camera_move_y)
                 inimigo.alvo_patrulha_atual = (inimigo.alvo_patrulha_atual[0] + camera_move_x, inimigo.alvo_patrulha_atual[1] + camera_move_y)
-
             if inimigo.alvo_busca:
                 inimigo.alvo_busca[0] += camera_move_x
                 inimigo.alvo_busca[1] += camera_move_y
 
-            inimigo.update(self.player, delta_time)
-
             inimigo.rect.x += camera_move_x + (inimigo.vx * delta_time)
             inimigo.rect.y += camera_move_y + (inimigo.vy * delta_time)
-
             inimigo.px += camera_move_x
             inimigo.py += camera_move_y
 
             for bala in inimigo.shots:
                 bala.rect.x += camera_move_x
                 bala.rect.y += camera_move_y
-            for bala in inimigo.shots[:]:
-                bala.update(delta_time)
+            
+            inimigo.shots.update(delta_time)
+            for bala in inimigo.shots:
                 if not self.screen.get_rect().colliderect(bala.rect):
-                    inimigo.shots.remove(bala)
-
-        for drop in self.drops[:]:
-            drop.rect.x += camera_move_x
-            drop.rect.y += camera_move_y
-
-            drop.hitbox.center = drop.rect.center
-
+                    bala.kill() # Remove a bala do grupo se sair da tela
+        
+        # Atualiza os inimigos
+        self.enemies.update(self.player, delta_time)
+        self.caixa_de_armas.update() # Assumindo que CaixaArma tenha um método update
+        
+        # Lógica de drops
+        for drop in self.drops:
             if pygame.time.get_ticks() - drop.creation_time > drop.lifetime:
-                self.drops.remove(drop)
+                drop.kill() # Remove o drop se o tempo de vida expirar
                 continue
-                    
-            if self.player.hitbox.colliderect(drop.hitbox):
-                if self.player.vidas < self.player.max_vidas:
-                    self.player.vidas += 1
-                    self.drops.remove(drop)
+        
+        collided_drops = pygame.sprite.spritecollide(self.player, self.drops, True, pygame.sprite.collide_rect_ratio(0.75))
+        for drop in collided_drops:
+            if self.player.vidas < self.player.max_vidas:
+                self.player.vidas += 1
 
         self.checar_alertas()
         self.checar_colisoes()
 
     def checar_alertas(self):
         for inimigo in self.enemies:
-            if inimigo.estado == ESTADO_PATRULHA or inimigo.estado == ESTADO_RETORNO or inimigo.estado == ESTADO_BUSCA:
+            if inimigo.estado in [ESTADO_PATRULHA, ESTADO_RETORNO, ESTADO_BUSCA]:
                 if inimigo.pode_ver_alvo(self.player):
                     inimigo.estado = ESTADO_ATAQUE
         
@@ -149,75 +136,56 @@ class Fase(GameObject):
                     inimigo.estado = ESTADO_BUSCA
 
     def checar_colisoes(self):
-        for bala in self.player.shots[:]:
-            for inimigo_atingido in self.enemies[:]:
-                if inimigo_atingido.hitbox.colliderect(bala.rect):
-                    
-                    era_furtivo = self.player.running == 1 and (inimigo_atingido.estado == ESTADO_PATRULHA or inimigo_atingido.estado == ESTADO_RETORNO)
+        # Colisão entre tiros do jogador e inimigos
+        # groupcollide retorna um dicionário {inimigo: [balas]}
+        colisoes_inimigos = pygame.sprite.groupcollide(self.enemies, self.player.shots, False, True)
+        for inimigo_atingido, balas_colididas in colisoes_inimigos.items():
+            era_furtivo = self.player.running == 1 and (inimigo_atingido.estado in [ESTADO_PATRULHA, ESTADO_RETORNO])
 
-                    if era_furtivo:
-                        inimigo_atingido.vidas = 0
-                    else:
-                        inimigo_atingido.vidas -= 1
+            if era_furtivo:
+                inimigo_atingido.vidas = 0
+            else:
+                inimigo_atingido.vidas -= 1
+            
+            if inimigo_atingido.vidas <= 0:
+                if random.random() < 0.25:
+                    novo_drop = HealthDrop(self.screen, inimigo_atingido.rect.centerx, inimigo_atingido.rect.centery)
+                    self.drops.add(novo_drop)
+                    print(f"--> DROP CRIADO: ID={id(novo_drop)}, Pos={inimigo_atingido.rect.center}")
 
-                    if bala in self.player.shots:
-                        self.player.shots.remove(bala)
-                    
-                    if inimigo_atingido.vidas <= 0:
-                        if random.random() < 0.25:
-                            drop_x = inimigo_atingido.rect.centerx
-                            drop_y = inimigo_atingido.rect.centery
+                if era_furtivo:
+                    for outro_inimigo in self.enemies:
+                        if outro_inimigo is not inimigo_atingido and outro_inimigo.pode_ver_alvo(inimigo_atingido):
+                            outro_inimigo.estado = ESTADO_BUSCA
+                            outro_inimigo.alvo_busca = list(inimigo_atingido.rect.center)
+                else:
+                    self.propagar_som(inimigo_atingido.rect.center, RAIO_SOM_METRALHADORA)
+                
+                inimigo_atingido.kill() # Remove o inimigo de todos os grupos
+            else:
+                self.propagar_som(inimigo_atingido.rect.center, RAIO_SOM_METRALHADORA)
 
-                            novo_drop = HealthDrop(self.screen, drop_x, drop_y)
-                            self.drops.append(novo_drop)
-                            print(f"--> DROP CRIADO: ID={id(novo_drop)}, Pos=({drop_x}, {drop_y})")
-
-                        if era_furtivo:
-                            for outro_inimigo in self.enemies:
-                                if outro_inimigo is not inimigo_atingido:
-                                    if outro_inimigo.pode_ver_alvo(inimigo_atingido):
-                                        outro_inimigo.estado = ESTADO_BUSCA
-                                        outro_inimigo.alvo_busca = list(inimigo_atingido.rect.center)
-                        else:
-                            self.propagar_som(inimigo_atingido.rect.center, RAIO_SOM_METRALHADORA)
-                        
-                        self.enemies.remove(inimigo_atingido)
-                    else:
-                        self.propagar_som(inimigo_atingido.rect.center, RAIO_SOM_METRALHADORA)
-
-                    break
-
+        # Colisão entre tiros inimigos e jogador
         for inimigo in self.enemies:
-            for bala in inimigo.shots[:]:
-                if self.player.rect.colliderect(bala):
-                    if not self.player.is_invulnerable:
-                        self.player.sofrer_dano(1)
-                        inimigo.shots.remove(bala)
-                        if self.player.vidas <= 0:
-                            print("GAME OVER")
-                    else:
-                        if bala in inimigo.shots:
-                            inimigo.shots.remove(bala)
-                    break
-
+            colisoes_jogador = pygame.sprite.spritecollide(self.player, inimigo.shots, True)
+            if colisoes_jogador:
+                if not self.player.is_invulnerable:
+                    self.player.sofrer_dano(len(colisoes_jogador)) # Causa dano por cada bala
+                    if self.player.vidas <= 0:
+                        print("GAME OVER")
 
     def render(self):
         self.draw()
+        
+        # Usa o método .draw() dos grupos para renderizar todos os sprites de uma vez
+        self.objects.draw(self.screen)
+        self.caixa_de_armas.draw(self.screen)
+        self.drops.draw(self.screen)
+        
         for inimigo in self.enemies:
-            inimigo.draw()
+            inimigo.draw() # Desenha o inimigo individualmente
             inimigo.draw_vision_cone()
-            for bala in inimigo.shots:
-                bala.draw()
+            inimigo.shots.draw(self.screen) # Desenha todos os tiros do inimigo
             if inimigo.icone_estado_atual:
                 icone_rect = inimigo.icone_estado_atual.get_rect(center=(inimigo.rect.centerx, inimigo.rect.top - 20))
                 self.screen.blit(inimigo.icone_estado_atual, icone_rect)
-        
-        for caixa in self.caixa_de_armas:
-            caixa.draw()
-
-        for objeto in self.objects:
-            objeto.draw()
-
-        for drop in self.drops:
-            drop.draw()
-            #pygame.draw.rect(self.screen, (0, 255, 0), drop.rect, 2)

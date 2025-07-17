@@ -32,7 +32,8 @@ class Player(GameObject):
             "metralhadora": carregar_imagem("jogo/sprites/player_metralhadora.png")
         }
 
-        self.shots = []
+        # A lista de tiros foi substituída por um Grupo de Sprites
+        self.shots = pygame.sprite.Group()
         
         self.original_image = self.image
 
@@ -53,12 +54,14 @@ class Player(GameObject):
         self.cadence_metralhadora += delta_time
         if self.shooting:
             if self.arma == PISTOLA and self.m_pistola > 0:
-                self.shots.append(Tiro(self.screen, self))
+                # Adiciona o novo tiro ao grupo de sprites
+                self.shots.add(Tiro(self.screen, self))
                 self.m_pistola -= 1
                 self.shooting = False
             
             elif self.arma == METRALHADORA and self.m_metralhadora > 0 and self.cadence_metralhadora >= 0.1:
-                self.shots.append(Tiro(self.screen, self))
+                # Adiciona o novo tiro ao grupo de sprites
+                self.shots.add(Tiro(self.screen, self))
                 self.m_metralhadora -= 1
                 self.cadence_metralhadora = 0
 
@@ -89,7 +92,6 @@ class Player(GameObject):
                 self.visible = True
 
     def sofrer_dano(self, quantidade):
-        """Reduz a vida do jogador e ativa a invulnerabilidade se ele não estiver invulnerável."""
         if not self.is_invulnerable:
             self.vidas -= quantidade
             self.is_invulnerable = True
