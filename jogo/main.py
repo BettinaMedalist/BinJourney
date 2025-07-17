@@ -21,6 +21,12 @@ class Game:
         
         self.fase_atual_tipo = Tutorial
         self.fase = self.fase_atual_tipo(self.screen, self.player)
+        self.levels = [Tutorial, Fase1]
+        self.current_level_index = 0
+        
+
+        self.fase_atual_tipo = self.levels[self.current_level_index]
+        self.fase = self.fase_atual_tipo(self.screen, self.player)
 
         self.menu_principal = MenuPrincipal(self.screen)
         self.menu_pause = MenuPause(self.screen)
@@ -66,6 +72,9 @@ class Game:
         if self.game_state == MENU:
             self.game_state = self.menu_principal.executar(self.game_state, self.events)
         elif self.game_state == RODANDO:
+            if not self.fase.enemies:
+                self.go_to_next_level()
+
             self.fase.render()
             self.player.draw()
             # Desenha todos os tiros do jogador de uma vez
@@ -109,6 +118,22 @@ class Game:
                     bala.kill()
             
             self.fase.update(self.delta_time)
+
+    def go_to_next_level(self):
+    
+        print("Fase concluída!")
+        self.current_level_index += 1
+
+        # Verifica se ainda há fases na lista
+        if self.current_level_index < len(self.levels):
+            # Carrega a próxima fase
+            self.fase_atual_tipo = self.levels[self.current_level_index]
+            self.fase = self.fase_atual_tipo(self.screen, self.player)
+        else:
+            # Se não houver mais fases, o jogo acaba
+            print("VOCÊ VENCEU O JOGO!")
+
+            self.running = False
 
     def run(self):
         while self.running:

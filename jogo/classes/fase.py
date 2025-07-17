@@ -78,6 +78,8 @@ class Fase:
                     self.add_caixa_arma(x, y, PISTOLA)
                 elif tile_code == 'L':
                     self.add_caixa_arma(x, y, METRALHADORA)
+                elif tile_code == 'U':
+                    self.add_object("upgrade",0, x, y)
                 elif tile_code == 'G':
                     self.add_enemy("pistola", 0, x, y)
                 if tile_code != 'W' or tile_code != 'D' or tile_code != 'T': # Para qualquer outra letra não definida, desenha o chão de concreto
