@@ -2,6 +2,7 @@ import pygame
 from classes.game_object import *
 from constantes import *
 
+
 class Tiro(GameObject):
     def __init__(self, screen, owner):
         # Inicia o GameObject, carregando a imagem da bala
@@ -36,4 +37,4 @@ class Tiro(GameObject):
 
         # Verifica se a bala saiu da tela para se autodestruir
         if not pygame.display.get_surface().get_rect().colliderect(self.rect):
-            self.kill() # Remove a bala de todos os grupos a que ela pertence
+            self.kill()  # Remove a bala de todos os grupos a que ela pertence

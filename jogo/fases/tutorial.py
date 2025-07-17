@@ -1,31 +1,33 @@
 from classes.fase import *
 from constantes import *
-# A classe Tile provavelmente está em outro lugar, ajuste o import se necessário
-from classes.tile import Tile
+from classes.tile import*
 
 # A matriz continua a mesma por enquanto, você a modificará depois com os novos códigos
 TUTORIAL_LAYOUT = [
     'WWWWWWWWWWWWWWWWWWWWWWW',
-    'W                 W    W',
-    'W                 W    W',
-    'W                 W    W',
-    'W             E   W    W',
-    'W         P       W    W',
-    'W                 W    W',
-    'W                 W    W',
-    'W                 W    W',
-    'W                 W    W',
-    'W                 W    W',
-    'WWWWWWWWWWWWWWWWWWWWWWW',
+    'W                      W',
+    'W                      W',
+    'W                      W',
+    'W             P        W',
+    'W         J            W',
+    'W                      W',
+    'W                      W',
+    'W                      W',
+    'W                      W',
+    'W                      W',
+    'W                      W',
+    'W                      W',
+    'WWWWWWWWWWWWWWWWWWWWWWWW',
 ]
 TILE_SIZE = 64
+
 
 class Tutorial(Fase):
     def __init__(self, screen, player, delta_time):
         super().__init__(screen, player, delta_time)
 
         # Carrega as imagens dos tiles
-        self.chao_tile_img = pygame.image.load("jogo/sprites/chaotuto.png").convert_alpha()
+        self.chao_tile_img = pygame.image.load("jogo/sprites/chaoconcreto.png").convert_alpha()
         self.parede_tile_img = pygame.image.load("jogo/sprites/paredetuto.png").convert_alpha()
 
         # Loop que lê a matriz e constrói o nível
@@ -43,21 +45,20 @@ class Tutorial(Fase):
                     Tile(self.parede_tile_img, x, y, groups=[self.background_group])
                     self.add_object("parede", 0, x, y)
 
-                # --- LÓGICA ATUALIZADA COM OS NOVOS CÓDIGOS ---
 
-                elif tile_code == 'J': # J = Jogador
+                elif tile_code == 'J':  # J = Jogador
                     self.player.rect.topleft = (x, y)
 
-                elif tile_code == 'G': # G = Inimigo com Pistola
+                elif tile_code == 'G':  # G = Inimigo com Pistola
                     self.add_enemy("pistola", 0, x, y)
 
-                elif tile_code == 'M': # M = Inimigo com Metralhadora
+                elif tile_code == 'M':  # M = Inimigo com Metralhadora
                     self.add_enemy("metralhadora", 0, x, y)
 
-                elif tile_code == 'K': # K = Inimigo Melee
+                elif tile_code == 'K':  # K = Inimigo Melee
                     self.add_enemy("melee", 0, x, y)
 
-                elif tile_code == 'P': # P = Inimigo de Patrulha com Pistola
+                elif tile_code == 'P':  # P = Inimigo de Patrulha com Pistola
                     # Como mencionado, o ponto B da patrulha não pode vir do mapa.
                     # Teríamos que definir um ponto padrão aqui, ou criá-lo de forma diferente.
                     # Por enquanto, criamos ele sem um ponto B (ponto_b=None).

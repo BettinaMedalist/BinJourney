@@ -29,3 +29,9 @@ ESQUERDA = 180
 BAIXO = 270
 
 TILE_SIZE = 64
+
+ESTADO_PATRULHA = "patrulhando"
+ESTADO_ATAQUE = "atacando"
+ESTADO_BUSCA = "procurando"
+ESTADO_RETORNO = "retornando"
+ESTADO_RECARREGANDO = "recarregando"
