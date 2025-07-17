@@ -29,27 +29,59 @@ class Fase:
         self.visible_sprites.add(self.player)
 
     def create_level(self, layout, tile_size):
-        chao_tile_img = pygame.image.load("jogo/sprites/chaoconcreto.png").convert_alpha()
-        parede_tile_img = pygame.image.load("jogo/sprites/paredetuto.png").convert_alpha()
+        # --- OTIMIZAÇÃO: Carregue todas as imagens UMA VEZ antes do loop ---
+        # Isso melhora muito o desempenho do jogo.
+        imagens = {
+            "chao_concreto": pygame.image.load("jogo/sprites/chaoconcreto.png").convert_alpha(),
+            "parede_tuto": pygame.image.load("jogo/sprites/paredetuto.png").convert_alpha(),
+            "parede_dentro": pygame.image.load("jogo/sprites/parededentro.png").convert_alpha(),
+            "chao_dentro": pygame.image.load("jogo/sprites/chaodentro.png").convert_alpha(),
+            "mesa": pygame.image.load("jogo/sprites/mesa.png").convert_alpha(),
+        }
 
+        # --- LÓGICA DE POSICIONAMENTO INICIAL ---
+        # PASSO 1: Encontrar a posição do 'J' no layout
+        start_pos_x, start_pos_y = 0, 0
+        j_encontrado = False
         for row_index, row in enumerate(layout):
-            for col_index, tile_code in enumerate(row):
-                x = col_index * tile_size
-                y = row_index * tile_size
+            if 'J' in row:
+                start_pos_x = row.find('J') * tile_size
+                start_pos_y = row_index * tile_size
+                j_encontrado = True
+                break
+    
+        # Se 'J' não for encontrado, o jogo começa no canto superior esquerdo
+        if not j_encontrado:
+            print("AVISO: 'J' não encontrado no layout. Começando do canto.")
 
-                # Lógica para o chão (desenhado sob todos os objetos)
-                if tile_code != 'W':
-                    Tile(chao_tile_img, x, y, groups=[self.visible_sprites], layer=CAMADA_CHAO)
+        # PASSO 2: Calcular o deslocamento para centralizar a visão no 'J'
+        offset_x = self.screen.get_rect().centerx - start_pos_x
+        offset_y = self.screen.get_rect().centery - start_pos_y
 
-                # Lógica para os objetos específicos
-                if tile_code == 'W': # Parede
-                    Tile(parede_tile_img, x, y, groups=[self.visible_sprites, self.obstacles_sprites], layer=CAMADA_PAREDE)
+        # PASSO 3: Criar o nível aplicando o deslocamento em cada tile
+        for row_index, row in enumerate(layout):
+            # Usamos strip() para remover espaços em branco extras no final da linha
+            for col_index, tile_code in enumerate(row.strip()):
+                # Adiciona o offset à posição de cada tile
+                x = col_index * tile_size + offset_x
+                y = row_index * tile_size + offset_y
 
-                elif tile_code == 'J':  # Jogador
-                    self.player.rect.topleft = (x, y)
-
-                elif tile_code == 'G':  # Inimigo com Pistola
+                if tile_code == 'W':
+                    Tile(imagens["parede_tuto"], x, y, groups=[self.visible_sprites, self.obstacles_sprites], layer=CAMADA_PAREDE)
+                elif tile_code == 'T':
+                    Tile(imagens["parede_dentro"], x, y, groups=[self.visible_sprites, self.obstacles_sprites], layer=CAMADA_PAREDE)
+                elif tile_code == 'A':
+                    Tile(imagens["chao_dentro"], x, y, groups=[self.visible_sprites], layer=CAMADA_CHAO)
+                elif tile_code == 'D':
+                    Tile(imagens["mesa"], x, y, groups=[self.visible_sprites, self.obstacles_sprites], layer=CAMADA_PAREDE)
+                elif tile_code == 'C':
+                    self.add_caixa_arma(x, y, PISTOLA)
+                elif tile_code == 'L':
+                    self.add_caixa_arma(x, y, METRALHADORA)
+                elif tile_code == 'G':
                     self.add_enemy("pistola", 0, x, y)
+                if tile_code != 'W' or tile_code != 'D' or tile_code != 'T': # Para qualquer outra letra não definida, desenha o chão de concreto
+                    Tile(imagens["chao_concreto"], x, y, groups=[self.visible_sprites], layer=CAMADA_CHAO)
 
     def add_enemy(self, enemy_type, angle, x, y, ponto_b=None):
         # Adiciona inimigos ao grupo .enemies
@@ -83,6 +115,7 @@ class Fase:
         # Adiciona caixas ao grupo .caixa_de_armas
         
         caixa = (CaixaArma(self.screen, x, y, tipo_arma))
+        caixa._layer = CAMADA_OBJETOS
         self.caixa_de_armas.add(caixa)
         self.visible_sprites.add(caixa)
 

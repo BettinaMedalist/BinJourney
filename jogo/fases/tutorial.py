@@ -8,7 +8,7 @@ TUTORIAL_LAYOUT = [
     'W                     W',
     'W          G          W', # G = Inimigo Pistola
     'W                     W',
-    'W         J           W', # J = Jogador
+    'W   C      J          W', # J = Jogador
     'W                     W',
     'W                     W',
     'WWWWWWWWWWWWWWWWWWWWWWW',

@@ -35,7 +35,6 @@ class Game:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.game_state = PAUSADO if self.game_state == RODANDO else RODANDO
-                # ... (Lógica de input permanece a mesma)
                 if event.key == pygame.K_1:
                     if MAO in self.player.armas_desbloqueadas: self.player.arma = MAO
                 elif event.key == pygame.K_2:
@@ -80,7 +79,7 @@ class Game:
             self.fase.render()
             self.player.shots.draw(self.screen)
             self.game_state = self.menu_pause.executar(self.game_state, self.events)
-            
+
         elif self.game_state == SAIR:
             self.running = False
         pygame.display.flip()
