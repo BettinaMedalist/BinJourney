@@ -60,7 +60,13 @@ class Game:
                     if event.key == pygame.K_RIGHT: self.player.angle = DIREITA
 
                 if event.key == pygame.K_LSHIFT: self.player.running = 3
-                if event.key == pygame.K_r: self.player.recarregar()  # Supondo um método recarregar
+                    
+                if event.key == pygame.K_r:
+                    #Ajeitei a recarga: Eu acho
+                    if self.player.arma == PISTOLA:
+                        self.player.m_pistola = 10
+                    elif self.player.arma == METRALHADORA:
+                        self.player.m_metralhadora = 30
 
             elif event.type == pygame.KEYUP:
                 if event.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]:
