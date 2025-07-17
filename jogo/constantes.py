@@ -2,7 +2,6 @@
 MAO = 0
 PISTOLA = 1
 METRALHADORA = 2
-MELEE = 3
 
 #Configurações
 FPS = 60
@@ -17,7 +16,6 @@ BOSS = 4
 #Game_state
 MENU = 0
 RODANDO = 1
-CONFIG = 2
 PAUSADO = 3
 MORTO = 4
 SAIR = -1
