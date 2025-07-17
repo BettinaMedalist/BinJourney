@@ -162,10 +162,23 @@ class Fase:
                 inimigo.alvo_busca[0] += camera_move_x
                 inimigo.alvo_busca[1] += camera_move_y
 
+            posicao_original_x = inimigo.rect.x
+            posicao_original_y = inimigo.rect.y
+
             inimigo.rect.x += (inimigo.vx * delta_time)
             inimigo.rect.y += (inimigo.vy * delta_time)
-            inimigo.px += camera_move_x
-            inimigo.py += camera_move_y
+
+            if pygame.sprite.spritecollide(inimigo, self.obstacles_sprites, False):
+                # Se colidiu, volta para a posição original, impedindo o movimento
+                inimigo.rect.x = posicao_original_x
+                inimigo.rect.y = posicao_original_y
+        
+                # Opcional: faz o inimigo parar de tentar atravessar a parede
+                if inimigo.estado == ESTADO_ATAQUE or inimigo.estado == ESTADO_BUSCA:
+                    inimigo.alvo_busca = None
+                    inimigo.estado = ESTADO_RETORNO
+                    inimigo.px += camera_move_x
+                    inimigo.py += camera_move_y
 
             for bala in inimigo.shots:
                 bala.rect.x += camera_move_x
@@ -217,6 +230,12 @@ class Fase:
     def checar_colisoes(self):
         # Colisão entre tiros do jogador e inimigos
         # groupcollide retorna um dicionário {inimigo: [balas]}
+        pygame.sprite.groupcollide(self.player.shots, self.obstacles_sprites, True, False)
+
+        # Faz o mesmo para as balas de CADA inimigo
+        for inimigo in self.enemies:
+            pygame.sprite.groupcollide(inimigo.shots, self.obstacles_sprites, True, False)
+
         colisoes_inimigos = pygame.sprite.groupcollide(self.enemies, self.player.shots, False, True)
         for inimigo_atingido, balas_colididas in colisoes_inimigos.items():
             era_furtivo = self.player.running == 1 and (inimigo_atingido.estado in [ESTADO_PATRULHA, ESTADO_RETORNO])
